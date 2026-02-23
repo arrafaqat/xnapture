@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xnapture — Screenshot Editor</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="header-logo">
+      <div class="logo-icon">✦</div>
+      <div>
+        <div class="logo-text">Xnapture</div>
+        <div class="logo-badge">Screenshot Editor</div>
+      </div>
+    </div>
+    <div class="header-divider"></div>
+    <nav class="header-tabs" role="tablist">
+      <button class="header-tab active" data-tab="style" role="tab" aria-selected="true">Style</button>
+      <button class="header-tab" data-tab="background" role="tab" aria-selected="false">Background</button>
+      <button class="header-tab" data-tab="export" role="tab" aria-selected="false">Export</button>
+    </nav>
+    <div class="header-spacer"></div>
+    <div class="header-actions">
+      <button class="header-action-btn" id="btn-new-capture" title="Capture new screenshot">
+        📸 New Capture
+      </button>
+      <button class="header-action-btn" id="btn-reset" title="Reset to defaults">
+        ↺ Reset
+      </button>
+    </div>
+  </header>
+
+  <!-- BODY -->
+  <main class="app-body">
+
+    <!-- LEFT: CONTROL PANEL -->
+    <aside class="control-panel" id="control-panel">
+
+      <!-- TAB: STYLE -->
+      <div class="tab-content" data-tab="style">
+
+        <!-- ADJUSTMENTS -->
+        <section class="panel-section">
+          <h3 class="section-title">Adjustments</h3>
+          <div class="slider-group">
+
+            <div class="slider-item">
+              <div class="slider-header">
+                <label class="slider-label" for="slider-padding">Padding</label>
+                <span class="slider-value" id="val-padding">48px</span>
+              </div>
+              <div class="slider-track">
+                <input type="range" id="slider-padding" min="0" max="120" value="48" step="1"
+                  aria-label="Padding" aria-valuenow="48" aria-valuemin="0" aria-valuemax="120">
+              </div>
+            </div>
+
+            <div class="slider-item">
+              <div class="slider-header">
+                <label class="slider-label" for="slider-inset">Inset</label>
+                <span class="slider-value" id="val-inset">0px</span>
+              </div>
+              <div class="slider-track">
+                <input type="range" id="slider-inset" min="0" max="40" value="0" step="1"
+                  aria-label="Inset padding" aria-valuenow="0" aria-valuemin="0" aria-valuemax="40">
+              </div>
+            </div>
+
+            <!-- Mat Color row — shown only when inset > 0 -->
+            <div class="inset-color-row" id="inset-color-row" style="display:none">
+              <span class="slider-label">Mat Color</span>
+              <div class="inset-color-controls">
+                <input type="color" id="inset-color-picker" value="#ffffff" aria-label="Mat color">
+                <button class="btn-auto-detect" id="btn-auto-detect" title="Auto-detect from screenshot background">⚡ Auto</button>
+              </div>
+            </div>
+
+            <div class="slider-item">
+              <div class="slider-header">
+                <label class="slider-label" for="slider-radius">Border Radius</label>
+                <span class="slider-value" id="val-radius">16px</span>
+              </div>
+              <div class="slider-track">
+                <input type="range" id="slider-radius" min="0" max="48" value="16" step="1"
+                  aria-label="Border radius" aria-valuenow="16" aria-valuemin="0" aria-valuemax="48">
+              </div>
+            </div>
+
+            <div class="slider-item">
+              <div class="slider-header">
+                <label class="slider-label" for="slider-shadow">Shadow Intensity</label>
+                <span class="slider-value" id="val-shadow">50%</span>
+              </div>
+              <div class="slider-track">
+                <input type="range" id="slider-shadow" min="0" max="100" value="50" step="1"
+                  aria-label="Shadow intensity" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- WATERMARK -->
+        <section class="panel-section">
+          <h3 class="section-title">Watermark</h3>
+          <div class="watermark-row">
+            <div>
+              <div class="watermark-label">Remove watermark</div>
+              <div class="watermark-desc">Hide "Made with Xnapture" text</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="toggle-watermark" aria-label="Remove watermark">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </section>
+
+        <!-- PRESETS -->
+        <section class="panel-section">
+          <h3 class="section-title">Presets</h3>
+          <div class="presets-list" id="presets-list">
+            <!-- Populated by JS -->
+          </div>
+          <div class="preset-save-row">
+            <input type="text" class="preset-name-input" id="preset-name-input" placeholder="Name this preset…" maxlength="30">
+            <button class="preset-save-btn" id="btn-save-preset" title="Save current settings as preset">Save</button>
+          </div>
+        </section>
+
+      </div><!-- end tab: style -->
+
+      <!-- TAB: BACKGROUND -->
+      <div class="tab-content" data-tab="background" style="display:none">
+
+        <section class="panel-section">
+          <h3 class="section-title">Background</h3>
+
+          <!-- Background type tabs -->
+          <div class="bg-tabs" role="tablist">
+            <button class="bg-tab active" data-bgtab="gradients" role="tab">Gradients</button>
+            <button class="bg-tab" data-bgtab="colors" role="tab">Colors</button>
+            <button class="bg-tab" data-bgtab="images" role="tab">Images</button>
+            <button class="bg-tab" data-bgtab="video" role="tab">Video</button>
+          </div>
+
+          <!-- GRADIENTS -->
+          <div class="bg-panel-content active" data-bgtab-content="gradients">
+            <div class="gradient-grid" id="gradient-grid">
+              <!-- Populated by JS -->
+            </div>
+
+            <div class="custom-gradient-builder">
+              <div class="gradient-builder-label">Custom Gradient</div>
+              <div class="gradient-builder-row">
+                <label>From</label>
+                <input type="color" id="grad-color1" value="#10b981" aria-label="Gradient start color">
+                <div class="gradient-preview-bar" id="grad-preview-bar"></div>
+              </div>
+              <div class="gradient-builder-row">
+                <label>To</label>
+                <input type="color" id="grad-color2" value="#06b6d4" aria-label="Gradient end color">
+              </div>
+              <div class="gradient-builder-row">
+                <label>Angle</label>
+                <input type="range" id="grad-angle" min="0" max="360" value="135" style="flex:1;"
+                  aria-label="Gradient angle" aria-valuenow="135" aria-valuemin="0" aria-valuemax="360">
+                <span class="slider-value" id="val-grad-angle">135°</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLORS -->
+          <div class="bg-panel-content" data-bgtab-content="colors">
+            <div class="color-swatch-grid" id="color-swatch-grid">
+              <!-- Populated by JS -->
+            </div>
+            <div class="color-custom-row">
+              <input type="color" id="custom-color" value="#10b981" aria-label="Custom background color">
+              <input type="text" class="hex-input" id="hex-input" value="#10b981" placeholder="#hex" maxlength="7">
+            </div>
+            <div class="opacity-row">
+              <label>Opacity</label>
+              <input type="range" id="color-opacity" min="0" max="100" value="100" style="flex:1;"
+                aria-label="Color opacity" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+              <span class="slider-value" id="val-color-opacity">100%</span>
+            </div>
+          </div>
+
+          <!-- IMAGES -->
+          <div class="bg-panel-content" data-bgtab-content="images">
+            <div class="bg-image-grid" id="bg-image-grid">
+              <!-- Populated by JS -->
+            </div>
+            <button class="bg-upload-btn" id="btn-upload-bg">
+              <span>📁</span> Upload Image
+            </button>
+            <input type="file" id="input-upload-bg" accept="image/*" style="display:none">
+          </div>
+
+          <!-- VIDEO -->
+          <div class="bg-panel-content" data-bgtab-content="video">
+            <div class="video-grid" id="video-grid">
+              <!-- Populated by JS -->
+            </div>
+            <button class="bg-upload-btn" id="btn-upload-video">
+              <span>🎬</span> Upload Video
+            </button>
+            <input type="file" id="input-upload-video" accept="video/*" style="display:none">
+          </div>
+
+        </section>
+
+      </div><!-- end tab: background -->
+
+      <!-- TAB: EXPORT -->
+      <div class="tab-content" data-tab="export" style="display:none">
+
+        <section class="panel-section">
+          <h3 class="section-title">Output Size</h3>
+          <div class="ratio-grid" id="ratio-grid">
+            <!-- Populated by JS -->
+          </div>
+          <div class="custom-ratio-row" id="custom-ratio-row" style="display:none">
+            <label>Size:</label>
+            <input type="number" class="dim-input" id="custom-width" value="1920" min="100" max="8000" aria-label="Custom width">
+            <span class="dim-separator">×</span>
+            <input type="number" class="dim-input" id="custom-height" value="1080" min="100" max="8000" aria-label="Custom height">
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <h3 class="section-title">Export Options</h3>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <button class="toolbar-btn primary" id="export-png-main" style="width:100%;justify-content:center;height:40px;font-size:13px;">
+              ↓ Export as PNG
+            </button>
+            <button class="toolbar-btn" id="export-jpg-main" style="width:100%;justify-content:center;height:36px;">
+              ↓ Export as JPG
+            </button>
+            <!-- Video duration + WebM export (grouped) -->
+            <div id="video-export-group">
+              <div class="video-duration-row">
+                <span class="video-duration-label">⏱ Duration</span>
+                <div class="video-duration-pills" id="video-duration-panel">
+                  <button class="dur-pill" data-sec="3">3s</button>
+                  <button class="dur-pill" data-sec="5">5s</button>
+                  <button class="dur-pill active" data-sec="10">10s</button>
+                  <button class="dur-pill" data-sec="15">15s</button>
+                  <button class="dur-pill" data-sec="30">30s</button>
+                  <button class="dur-pill" data-sec="60">60s</button>
+                </div>
+              </div>
+              <button class="toolbar-btn" id="export-webm-main" style="width:100%;justify-content:center;height:36px;" disabled>
+                ↓ Export as WebM (video only)
+              </button>
+            </div>
+            <button class="toolbar-btn" id="copy-clipboard-main" style="width:100%;justify-content:center;height:36px;">
+              ⎘ Copy to Clipboard
+            </button>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <h3 class="section-title">Keyboard Shortcuts</h3>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--text-secondary);">
+            <div style="display:flex;justify-content:space-between;"><span>Save PNG</span><kbd style="font-family:var(--font-mono);background:var(--bg-app);padding:2px 6px;border-radius:4px;border:1px solid var(--border);">⌘S</kbd></div>
+            <div style="display:flex;justify-content:space-between;"><span>Copy</span><kbd style="font-family:var(--font-mono);background:var(--bg-app);padding:2px 6px;border-radius:4px;border:1px solid var(--border);">⌘C</kbd></div>
+            <div style="display:flex;justify-content:space-between;"><span>Reset</span><kbd style="font-family:var(--font-mono);background:var(--bg-app);padding:2px 6px;border-radius:4px;border:1px solid var(--border);">⌘Z</kbd></div>
+            <div style="display:flex;justify-content:space-between;"><span>Zoom In/Out</span><kbd style="font-family:var(--font-mono);background:var(--bg-app);padding:2px 6px;border-radius:4px;border:1px solid var(--border);">+ / -</kbd></div>
+          </div>
+        </section>
+
+      </div><!-- end tab: export -->
+
+    </aside><!-- end control-panel -->
+
+    <!-- RIGHT: CANVAS AREA -->
+    <section class="canvas-area" id="canvas-area">
+
+      <div class="canvas-empty" id="canvas-empty">
+        <div class="canvas-empty-icon">📸</div>
+        <div class="canvas-empty-text">No screenshot yet</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Capture a screenshot to get started</div>
+      </div>
+
+      <!-- Stage: background + screenshot -->
+      <div class="stage-wrapper" id="stage-wrapper" style="display:none">
+        <div class="stage" id="stage">
+          <div class="stage-bg" id="stage-bg"></div>
+          <div class="screenshot-frame" id="screenshot-frame">
+            <!-- White cinematic mat frame (inset layer) -->
+            <div class="screenshot-mat" id="screenshot-mat">
+              <img class="screenshot-img" id="screenshot-img" src="" alt="Screenshot" draggable="false">
+            </div>
+          </div>
+          <!-- Watermark preview badge -->
+          <div class="watermark-badge" id="watermark-badge">Made with Xnapture</div>
+        </div>
+      </div>
+
+      <!-- Bottom right toolbar -->
+      <div class="canvas-toolbar">
+        <select class="zoom-select" id="zoom-select" aria-label="Zoom level">
+          <option value="0.5">50%</option>
+          <option value="0.75">75%</option>
+          <option value="1" selected>100%</option>
+          <option value="1.5">150%</option>
+          <option value="fit">Fit</option>
+        </select>
+        <div class="toolbar-separator"></div>
+        <button class="toolbar-btn" id="btn-copy" title="Copy to clipboard (⌘C)">⎘ Copy</button>
+        <button class="toolbar-btn primary" id="btn-export-png" title="Export PNG (⌘S)">↓ PNG</button>
+        <button class="toolbar-btn" id="btn-export-jpg" title="Export JPG">↓ JPG</button>
+        <select class="zoom-select video-dur-select" id="video-duration-toolbar" title="Video duration" aria-label="Video export duration" style="display:none">
+          <option value="3">3s</option>
+          <option value="5">5s</option>
+          <option value="10" selected>10s</option>
+          <option value="15">15s</option>
+          <option value="30">30s</option>
+          <option value="60">60s</option>
+        </select>
+        <button class="toolbar-btn" id="btn-export-webm" title="Export WebM video" disabled>↓ WebM</button>
+      </div>
+
+    </section><!-- end canvas-area -->
+
+  </main>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Hidden canvas for export -->
+  <canvas id="export-canvas" style="display:none"></canvas>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>

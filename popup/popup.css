@@ -1,0 +1,210 @@
+/* Xnapture — Popup Styles */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap');
+
+:root {
+  --bg-app: #f0fdf8;
+  --bg-panel: #ffffff;
+  --accent: #10b981;
+  --accent-light: #34d399;
+  --accent-dark: #059669;
+  --text-primary: #0f2e25;
+  --text-secondary: #4b7a69;
+  --text-muted: #9abfb5;
+  --border: #d1f0e5;
+  --shadow-sm: 0 1px 3px rgba(16,185,129,0.08);
+  --shadow-md: 0 4px 24px rgba(16,185,129,0.14);
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'DM Sans', -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: 220px;
+  background: var(--bg-app);
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  padding: 0;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.popup-header {
+  background: linear-gradient(135deg, #0f2e25 0%, #1a4d3a 100%);
+  padding: 18px 18px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(16,185,129,0.2);
+}
+
+.popup-logo {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  box-shadow: 0 2px 8px rgba(16,185,129,0.4);
+  flex-shrink: 0;
+}
+
+.popup-title {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.popup-subtitle {
+  font-size: 10px;
+  color: rgba(167, 243, 208, 0.7);
+  font-weight: 400;
+  margin-top: 2px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.popup-body {
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.popup-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-panel);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: all 0.18s ease;
+  box-shadow: var(--shadow-sm);
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.popup-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.popup-btn:hover::before {
+  opacity: 1;
+}
+
+.popup-btn:hover {
+  border-color: var(--accent);
+  color: white;
+  box-shadow: 0 4px 16px rgba(16,185,129,0.3);
+  transform: translateY(-1px);
+}
+
+.popup-btn:active {
+  transform: translateY(0);
+}
+
+.popup-btn .btn-icon {
+  font-size: 18px;
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.popup-btn .btn-text {
+  position: relative;
+  z-index: 1;
+}
+
+.popup-btn .btn-text strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.popup-btn .btn-text span {
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+  opacity: 0.65;
+  margin-top: 1px;
+}
+
+.popup-btn.primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  border-color: transparent;
+  color: white;
+  box-shadow: 0 4px 16px rgba(16,185,129,0.35);
+}
+
+.popup-btn.primary::before {
+  background: linear-gradient(135deg, var(--accent-light), var(--accent));
+}
+
+.popup-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 2px 0;
+}
+
+.popup-footer {
+  padding: 8px 12px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-version {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 400;
+  letter-spacing: 0.03em;
+}
+
+/* Loading state */
+.popup-btn.loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.popup-btn.loading .btn-icon::after {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
