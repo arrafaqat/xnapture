@@ -47,6 +47,15 @@ const RATIOS = [
 
 // Built-in gradient backgrounds (as CSS gradients rendered to canvas-like thumbnails)
 const BG_IMAGES = [
+  { name: 'Gradient 1',   bg: '../assets/background-images/gradient-1.jpg',   isFile: true },
+  { name: 'Gradient 2',   bg: '../assets/background-images/gradient-2.webp',  isFile: true },
+  { name: 'Gradient 3',   bg: '../assets/background-images/gradient-3.jpg',   isFile: true },
+  { name: 'Gradient 5',   bg: '../assets/background-images/gradient-5.png',   isFile: true },
+  { name: 'Gradient 6',   bg: '../assets/background-images/gradient-6.jpg',   isFile: true },
+  { name: 'Gradient 7',   bg: '../assets/background-images/gradient-7.jpg',   isFile: true },
+  { name: 'Gradient 8',   bg: '../assets/background-images/gradient-8.jpg',   isFile: true },
+  { name: 'Gradient 9',   bg: '../assets/background-images/gradient-9.jpg',   isFile: true },
+  { name: 'Cyberpunk',    bg: '../assets/background-images/cyberpunk-4.png',  isFile: true },
   { name: 'Mesh 1',    bg: 'radial-gradient(at 40% 20%, #ff6b6b 0%, transparent 50%), radial-gradient(at 80% 0%, #ffd93d 0%, transparent 50%), radial-gradient(at 0% 50%, #667eea 0%, transparent 50%), radial-gradient(at 50% 100%, #10b981 0%, transparent 50%), #0f2e25' },
   { name: 'Mesh 2',    bg: 'radial-gradient(at 0% 0%, #f093fb 0%, transparent 50%), radial-gradient(at 100% 100%, #4bc0c8 0%, transparent 50%), radial-gradient(at 50% 50%, #f5576c 0%, transparent 70%), #1e1b4b' },
   { name: 'Mesh 3',    bg: 'radial-gradient(at 50% 0%, #ffecd2 0%, transparent 60%), radial-gradient(at 0% 100%, #fcb69f 0%, transparent 60%), #f7971e' },
@@ -335,7 +344,13 @@ function buildImageGrid() {
 
     const preview = document.createElement('div');
     preview.className = 'bg-thumb-preview';
-    preview.style.background = img.bg;
+    if (img.isFile) {
+      preview.style.backgroundImage = `url('${img.bg}')`;
+      preview.style.backgroundSize = 'cover';
+      preview.style.backgroundPosition = 'center';
+    } else {
+      preview.style.background = img.bg;
+    }
     thumb.appendChild(preview);
 
     if (state.bgType === 'image-preset' && state.bgValue === img.bg) {
@@ -1216,9 +1231,17 @@ function drawWatermark(ctx, canvasW, canvasH) {
 async function drawBackgroundToCanvas(ctx, width, height, bgType, bgValue, opacity = 100) {
   const alpha = opacity / 100;
 
-  if (bgType === 'gradient' || bgType === 'image-preset') {
-    // Parse gradient CSS and draw to canvas
+  if (bgType === 'gradient') {
     drawCSSGradientToCanvas(ctx, bgValue, width, height);
+  } else if (bgType === 'image-preset') {
+    // Check if this is a file-based image or a CSS gradient
+    const bgEntry = BG_IMAGES.find(b => b.bg === bgValue);
+    if (bgEntry && bgEntry.isFile) {
+      const img = await loadImageElement(bgValue);
+      ctx.drawImage(img, 0, 0, width, height);
+    } else {
+      drawCSSGradientToCanvas(ctx, bgValue, width, height);
+    }
   } else if (bgType === 'color') {
     const hex = bgValue.replace('#', '');
     const r = parseInt(hex.substr(0, 2), 16);
