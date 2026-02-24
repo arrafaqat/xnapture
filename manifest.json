@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Xnapture — Beautiful Screenshots",
   "version": "1.0.0",
-  "description": "Capture and beautify screenshots with stunning backgrounds and effects",
+  "description": "Capture screenshots & make them beautiful. Add gradients, shadows, borders, and custom backgrounds. Export as PNG, JPG, or video.",
   "permissions": [
     "activeTab",
     "scripting",
