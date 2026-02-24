@@ -44,7 +44,7 @@ Capture a tab or select a region, then style it in seconds: gradient backgrounds
 
 ## Screenshot
 
-> *(Add a screenshot of the Xnapture editor here)*
+![Xnapture Dashboard](assets/xanpture-dashboard-screenshot.png)
 
 ---
 
