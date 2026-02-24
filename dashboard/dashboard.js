@@ -955,7 +955,12 @@ function applyBackground(bgType, bgValue, opacity = 100) {
   if (bgType === 'gradient' || bgType === 'image-preset') {
     if (existingVideo) existingVideo.remove();
     stageBg.style.animation = '';           // clear any leftover video shimmer
-    stageBg.style.background = bgValue;
+    const bgEntry = BG_IMAGES.find(b => b.bg === bgValue);
+    if (bgEntry && bgEntry.isFile) {
+      stageBg.style.background = `url('${bgValue}') center/cover no-repeat`;
+    } else {
+      stageBg.style.background = bgValue;
+    }
     stageBg.style.backgroundSize = 'cover';
     stageBg.style.backgroundPosition = 'center';
   } else if (bgType === 'color') {
