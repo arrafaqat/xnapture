@@ -1,6 +1,6 @@
 /* Xnapture — Popup Styles */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap');
 
 :root {
   --bg-app: #f0fdf8;
@@ -16,7 +16,7 @@
   --shadow-md: 0 4px 24px rgba(16,185,129,0.14);
   --radius-sm: 8px;
   --radius-md: 14px;
-  --font-display: 'Playfair Display', serif;
+  --font-display: 'Poppins', sans-serif;
   --font-body: 'DM Sans', -apple-system, sans-serif;
 }
 

@@ -1,6 +1,6 @@
 /* Xnapture — Dashboard Styles */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
   --bg-app: #f0fdf8;
@@ -22,7 +22,7 @@
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 20px;
-  --font-display: 'Playfair Display', serif;
+  --font-display: 'Poppins', sans-serif;
   --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
   --header-height: 58px;
