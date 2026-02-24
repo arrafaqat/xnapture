@@ -475,13 +475,26 @@ function attachEvents() {
     saveSettings();
   });
 
-  // Watermark toggle — update state + refresh preview badge
-  els.toggleWatermark.addEventListener('change', () => {
-    state.removeWatermark = els.toggleWatermark.checked;
-    if (els.watermarkBadge) {
-      els.watermarkBadge.classList.toggle('hidden', state.removeWatermark);
+  // Watermark toggle — Pro-gated
+  els.toggleWatermark.addEventListener('change', async () => {
+    // Unchecking: always allow (show watermark again)
+    if (!els.toggleWatermark.checked) {
+      state.removeWatermark = false;
+      if (els.watermarkBadge) els.watermarkBadge.classList.remove('hidden');
+      saveSettings();
+      return;
     }
-    saveSettings();
+    // Checking: verify Pro status first
+    const proData = await getProStatus();
+    if (proData && proData.plan === 'pro') {
+      state.removeWatermark = true;
+      if (els.watermarkBadge) els.watermarkBadge.classList.add('hidden');
+      saveSettings();
+    } else {
+      // Revert toggle and open upgrade modal
+      els.toggleWatermark.checked = false;
+      showProModal();
+    }
   });
 
   // Header tabs
@@ -746,8 +759,19 @@ function applyStateToUI() {
   els.sliderShadow.value = state.shadow;
   els.valShadow.textContent = state.shadow + '%';
 
-  // Watermark
+  // Watermark — enforce Pro gate on init
   els.toggleWatermark.checked = state.removeWatermark;
+  getProStatus().then(proData => {
+    const isPro = proData && proData.plan === 'pro';
+    const proBadge = document.getElementById('watermark-pro-badge');
+    if (proBadge) proBadge.style.display = isPro ? 'inline-flex' : 'none';
+    if (!isPro && state.removeWatermark) {
+      state.removeWatermark = false;
+      els.toggleWatermark.checked = false;
+      if (els.watermarkBadge) els.watermarkBadge.classList.remove('hidden');
+      saveSettings();
+    }
+  });
 
   // Gradient
   els.gradColor1.value = state.gradColor1 || '#10b981';
@@ -1781,6 +1805,104 @@ function renderPresetsList() {
     item.appendChild(loadBtn);
     item.appendChild(delBtn);
     list.appendChild(item);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+// PRO STATUS & UPGRADE MODAL
+// ══════════════════════════════════════════════════════════════
+
+async function getProStatus() {
+  try {
+    const result = await chrome.storage.local.get('xnaptureProEmail');
+    return result.xnaptureProEmail || null;
+  } catch {
+    return null;
+  }
+}
+
+function showProModal() {
+  const modal = document.getElementById('pro-modal');
+  const emailInput = document.getElementById('pro-modal-email');
+  const sendBtn = document.getElementById('pro-modal-send-btn');
+  const statusEl = document.getElementById('pro-modal-status');
+  const closeBtn = document.getElementById('pro-modal-close');
+
+  // Reset state
+  statusEl.style.display = 'none';
+  statusEl.textContent = '';
+  statusEl.className = 'pro-modal-status';
+  emailInput.value = '';
+  sendBtn.disabled = false;
+  sendBtn.textContent = 'Send Magic Link';
+
+  modal.style.display = 'flex';
+  setTimeout(() => emailInput.focus(), 50);
+
+  closeBtn.onclick = () => { modal.style.display = 'none'; };
+  modal.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+
+  sendBtn.onclick = async () => {
+    const email = emailInput.value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setProModalStatus('Please enter a valid email address.', true);
+      return;
+    }
+
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'Sending…';
+
+    try {
+      const res = await fetch('https://xnapture.com/api/auth/request-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+
+      if (data.status === 'magic_link_sent') {
+        setProModalStatus('Magic link sent! Check your inbox, click the link, then click the button below.', false);
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Open Auth Window';
+        sendBtn.onclick = () => {
+          modal.style.display = 'none';
+          launchAuthFlow(email);
+        };
+        return;
+      }
+
+      setProModalStatus(data.error || 'Something went wrong. Please try again.', true);
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'Send Magic Link';
+
+    } catch {
+      setProModalStatus('Network error. Check your connection and try again.', true);
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'Send Magic Link';
+    }
+  };
+}
+
+function setProModalStatus(message, isError) {
+  const statusEl = document.getElementById('pro-modal-status');
+  statusEl.textContent = message;
+  statusEl.className = 'pro-modal-status' + (isError ? ' error' : '');
+  statusEl.style.display = 'block';
+}
+
+function launchAuthFlow(email) {
+  chrome.runtime.sendMessage({ action: 'LAUNCH_PRO_AUTH', email }, (response) => {
+    if (response && response.success) {
+      const proBadge = document.getElementById('watermark-pro-badge');
+      if (proBadge) proBadge.style.display = 'inline-flex';
+      els.toggleWatermark.checked = true;
+      state.removeWatermark = true;
+      if (els.watermarkBadge) els.watermarkBadge.classList.add('hidden');
+      saveSettings();
+      showToast('✦ Pro activated! Watermark removed.');
+    } else {
+      showToast('Auth failed: ' + (response?.error || 'Unknown error'));
+    }
   });
 }
 

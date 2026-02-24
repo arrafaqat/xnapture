@@ -9,7 +9,8 @@
     "tabs",
     "storage",
     "downloads",
-    "desktopCapture"
+    "desktopCapture",
+    "identity"
   ],
   "host_permissions": ["<all_urls>"],
   "background": {

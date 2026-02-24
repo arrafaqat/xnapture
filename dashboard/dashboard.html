@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Xnapture — Screenshot Editor</title>
+  <link rel="icon" type="image/png" href="../assets/xnapure-icon.png">
   <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
@@ -11,7 +12,7 @@
   <!-- HEADER -->
   <header class="app-header">
     <div class="header-logo">
-      <div class="logo-icon">✦</div>
+      <img class="logo-icon" src="../assets/xnapure-icon.png" alt="Xnapture">
       <div>
         <div class="logo-text">Xnapture</div>
         <div class="logo-badge">Screenshot Editor</div>
@@ -109,7 +110,10 @@
           <h3 class="section-title">Watermark</h3>
           <div class="watermark-row">
             <div>
-              <div class="watermark-label">Remove watermark</div>
+              <div class="watermark-label">
+                Remove watermark
+                <span class="watermark-pro-badge" id="watermark-pro-badge" style="display:none;">✦ Pro</span>
+              </div>
               <div class="watermark-desc">Hide "Made with Xnapture" text</div>
             </div>
             <label class="toggle-switch">
@@ -276,6 +280,12 @@
 
       </div><!-- end tab: export -->
 
+      <!-- PANEL FOOTER -->
+      <div class="panel-footer">
+        <a href="https://xnapture.com" target="_blank" class="panel-footer-link">Built by xnapture.com</a>
+        <a href="https://trovv.io" target="_blank" class="panel-footer-link">Schedule with trovv.io</a>
+      </div>
+
     </aside><!-- end control-panel -->
 
     <!-- RIGHT: CANVAS AREA -->
@@ -335,6 +345,22 @@
 
   <!-- Hidden canvas for export -->
   <canvas id="export-canvas" style="display:none"></canvas>
+
+  <!-- PRO UPGRADE MODAL -->
+  <div id="pro-modal" class="pro-modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="pro-modal-title">
+    <div class="pro-modal">
+      <button class="pro-modal-close" id="pro-modal-close" aria-label="Close">&times;</button>
+      <div class="pro-modal-icon">✨</div>
+      <h2 class="pro-modal-title" id="pro-modal-title">Unlock Pro or Restore Access</h2>
+      <p class="pro-modal-desc">Enter your email — we'll send you a magic link. Already Pro? You'll be logged in instantly.</p>
+      <div class="pro-modal-email-row">
+        <input type="email" id="pro-modal-email" placeholder="your@email.com" autocomplete="email" aria-label="Email address">
+        <button class="pro-modal-btn" id="pro-modal-send-btn">Send Magic Link</button>
+      </div>
+      <div id="pro-modal-status" class="pro-modal-status" style="display:none;"></div>
+      <p class="pro-modal-note">One-time payment · Lifetime Pro access · No subscriptions</p>
+    </div>
+  </div>
 
   <script src="dashboard.js"></script>
 </body>

@@ -33,6 +33,56 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     openDashboard(msg.dataUrl);
     return true;
   }
+
+  if (msg.action === 'LAUNCH_PRO_AUTH') {
+    const email = msg.email;
+    const extensionId = chrome.runtime.id;
+    const redirectUri = `https://${extensionId}.chromiumapp.org/callback`;
+    const authUrl = `https://xnapture.com/auth/start?email=${encodeURIComponent(email)}&redirect_uri=${encodeURIComponent(redirectUri)}`;
+
+    chrome.identity.launchWebAuthFlow(
+      { url: authUrl, interactive: true },
+      (responseUrl) => {
+        if (chrome.runtime.lastError || !responseUrl) {
+          sendResponse({ success: false, error: chrome.runtime.lastError?.message || 'Auth cancelled' });
+          return;
+        }
+
+        let sessionToken;
+        try {
+          const url = new URL(responseUrl);
+          sessionToken = url.searchParams.get('session_token');
+        } catch {
+          sendResponse({ success: false, error: 'Invalid redirect URL' });
+          return;
+        }
+
+        if (!sessionToken) {
+          sendResponse({ success: false, error: 'No session token in redirect' });
+          return;
+        }
+
+        fetch('https://xnapture.com/api/auth/verify-token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session_token: sessionToken })
+        })
+          .then(r => r.json())
+          .then(data => {
+            if (data.valid && data.plan === 'pro') {
+              chrome.storage.local.set({
+                xnaptureProEmail: { email: data.email, plan: 'pro' }
+              });
+              sendResponse({ success: true, email: data.email });
+            } else {
+              sendResponse({ success: false, error: data.error || 'Not a Pro account' });
+            }
+          })
+          .catch(err => sendResponse({ success: false, error: err.message }));
+      }
+    );
+    return true; // keep message channel open for async response
+  }
 });
 
 function openDashboard(dataUrl) {
