@@ -1365,7 +1365,7 @@ async function exportVideo() {
   }
 
   const durationSec = state.videoDuration || 10;
-  const FPS         = 60;
+  const FPS         = 30;
   const totalFrames = durationSec * FPS;
 
   // ── Set both buttons to "recording" state ──
@@ -1408,7 +1408,7 @@ async function exportVideo() {
     const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
       ? 'video/webm;codecs=vp9' : 'video/webm';
 
-    const recorder = new MediaRecorder(captureStream, { mimeType });
+    const recorder = new MediaRecorder(captureStream, { mimeType, videoBitsPerSecond: 8_000_000 });
     const chunks   = [];
 
     recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
@@ -1501,25 +1501,32 @@ async function exportVideo() {
     recorder.start();
 
     let frame = 0;
-    // Use setTimeout-based loop so the browser stays responsive
-    function scheduleFrame() {
+    let lastTime = null;
+    const msPerFrame = 1000 / FPS;
+
+    function scheduleFrame(timestamp) {
       if (frame >= totalFrames) {
         recorder.stop();
         return;
       }
-      drawOneFrame(frame);
-      frame++;
 
-      // Update progress every ~15 frames (twice per second at 30fps)
-      if (frame % 15 === 0 || frame === totalFrames) {
-        const pct = Math.round((frame / totalFrames) * 100);
-        setRecordingState(pct);
+      // Only draw when enough time has elapsed for the next frame
+      if (lastTime === null || timestamp - lastTime >= msPerFrame) {
+        lastTime = timestamp;
+        drawOneFrame(frame);
+        frame++;
+
+        // Update progress every ~15 frames (twice per second at 30fps)
+        if (frame % 15 === 0 || frame === totalFrames) {
+          const pct = Math.round((frame / totalFrames) * 100);
+          setRecordingState(pct);
+        }
       }
 
-      setTimeout(scheduleFrame, 1000 / FPS);
+      requestAnimationFrame(scheduleFrame);
     }
 
-    scheduleFrame();
+    requestAnimationFrame(scheduleFrame);
 
   } catch (err) {
     console.error('Video export error:', err);
