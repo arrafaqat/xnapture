@@ -930,17 +930,17 @@ function computeStageDimensions() {
     const { padding } = state;
     const totalW = natW + padding * 2;
     const totalH = natH + padding * 2;
-    const s = Math.min(canvasW / totalW, canvasH / totalH, 1);
-    stageW = Math.round(totalW * s * currentZoom);
-    stageH = Math.round(totalH * s * currentZoom);
+    const s = Math.min(canvasW / totalW, canvasH / totalH, 1) * currentZoom;
+    stageW = Math.round(totalW * s);
+    stageH = Math.round(totalH * s);
   } else if (state.ratio === 'custom') {
-    const s = Math.min(canvasW / state.customWidth, canvasH / state.customHeight, 1);
-    stageW = Math.round(state.customWidth  * s * currentZoom);
-    stageH = Math.round(state.customHeight * s * currentZoom);
+    const s = Math.min(canvasW / state.customWidth, canvasH / state.customHeight) * currentZoom;
+    stageW = Math.round(state.customWidth  * s);
+    stageH = Math.round(state.customHeight * s);
   } else {
-    const s = Math.min(canvasW / ratio.w, canvasH / ratio.h, 1);
-    stageW = Math.round(ratio.w * s * currentZoom);
-    stageH = Math.round(ratio.h * s * currentZoom);
+    const s = Math.min(canvasW / ratio.w, canvasH / ratio.h) * currentZoom;
+    stageW = Math.round(ratio.w * s);
+    stageH = Math.round(ratio.h * s);
   }
 
   return { stageW, stageH };
@@ -1234,9 +1234,11 @@ function drawWatermark(ctx, canvasW, canvasH) {
 }
 
 function drawImageCover(ctx, img, width, height) {
-  const scale = Math.max(width / img.naturalWidth, height / img.naturalHeight);
-  const sw = img.naturalWidth * scale;
-  const sh = img.naturalHeight * scale;
+  const srcW = img.naturalWidth  || img.videoWidth  || img.width  || width;
+  const srcH = img.naturalHeight || img.videoHeight || img.height || height;
+  const scale = Math.max(width / srcW, height / srcH);
+  const sw = srcW * scale;
+  const sh = srcH * scale;
   const sx = (width - sw) / 2;
   const sy = (height - sh) / 2;
   ctx.drawImage(img, sx, sy, sw, sh);
@@ -1437,7 +1439,7 @@ async function exportVideo() {
       // Background
       const videoEl = els.stageBg.querySelector('video');
       if (videoEl) {
-        captureCtx.drawImage(videoEl, 0, 0, w, h);
+        drawImageCover(captureCtx, videoEl, w, h);
       } else {
         // Animate the gradient over time
         const t = frameIndex / totalFrames;
