@@ -934,11 +934,11 @@ function computeStageDimensions() {
     stageW = Math.round(totalW * s);
     stageH = Math.round(totalH * s);
   } else if (state.ratio === 'custom') {
-    const s = Math.min(canvasW / state.customWidth, canvasH / state.customHeight) * currentZoom;
+    const s = Math.min(canvasW / state.customWidth, canvasH / state.customHeight, 1) * currentZoom;
     stageW = Math.round(state.customWidth  * s);
     stageH = Math.round(state.customHeight * s);
   } else {
-    const s = Math.min(canvasW / ratio.w, canvasH / ratio.h) * currentZoom;
+    const s = Math.min(canvasW / ratio.w, canvasH / ratio.h, 1) * currentZoom;
     stageW = Math.round(ratio.w * s);
     stageH = Math.round(ratio.h * s);
   }
