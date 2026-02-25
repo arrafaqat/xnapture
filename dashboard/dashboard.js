@@ -1233,6 +1233,15 @@ function drawWatermark(ctx, canvasW, canvasH) {
   ctx.restore();
 }
 
+function drawImageCover(ctx, img, width, height) {
+  const scale = Math.max(width / img.naturalWidth, height / img.naturalHeight);
+  const sw = img.naturalWidth * scale;
+  const sh = img.naturalHeight * scale;
+  const sx = (width - sw) / 2;
+  const sy = (height - sh) / 2;
+  ctx.drawImage(img, sx, sy, sw, sh);
+}
+
 async function drawBackgroundToCanvas(ctx, width, height, bgType, bgValue, opacity = 100) {
   const alpha = opacity / 100;
 
@@ -1243,7 +1252,7 @@ async function drawBackgroundToCanvas(ctx, width, height, bgType, bgValue, opaci
     const bgEntry = BG_IMAGES.find(b => b.bg === bgValue);
     if (bgEntry && bgEntry.isFile) {
       const img = await loadImageElement(bgValue);
-      ctx.drawImage(img, 0, 0, width, height);
+      drawImageCover(ctx, img, width, height);
     } else {
       drawCSSGradientToCanvas(ctx, bgValue, width, height);
     }
@@ -1256,7 +1265,7 @@ async function drawBackgroundToCanvas(ctx, width, height, bgType, bgValue, opaci
     ctx.fillRect(0, 0, width, height);
   } else if (bgType === 'image-url' && customUploadedBgUrl) {
     const img = await loadImageElement(customUploadedBgUrl);
-    ctx.drawImage(img, 0, 0, width, height);
+    drawImageCover(ctx, img, width, height);
   } else if ((bgType === 'video-preset' || bgType === 'video-url')) {
     // For video, capture current frame
     const videoEl = els.stageBg.querySelector('video');
