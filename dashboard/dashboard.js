@@ -919,8 +919,8 @@ function updatePreview() {
 // Computes the pixel size the stage should be, based on ratio + canvas area + zoom
 function computeStageDimensions() {
   const canvasArea = document.getElementById('canvas-area');
-  const canvasW    = canvasArea.clientWidth  - 80;
-  const canvasH    = canvasArea.clientHeight - 80;
+  const canvasW    = canvasArea.clientWidth  - 160;
+  const canvasH    = canvasArea.clientHeight - 160;
   const ratio      = RATIOS.find(r => r.id === state.ratio);
   let stageW, stageH;
 
