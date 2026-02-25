@@ -1119,7 +1119,7 @@ async function exportImage(format = 'png') {
     const img    = await loadImageElement(screenshotDataUrl);
     const availW = width  - padding * 2;
     const availH = height - padding * 2;
-    const scale  = Math.min(availW / img.width, availH / img.height);
+    const scale  = Math.min(availW / img.width, availH / img.height, 1);
 
     const scaledW = img.width  * scale;
     const scaledH = img.height * scale;
@@ -1446,7 +1446,7 @@ async function exportVideo() {
       // Screenshot + mat
       const availW  = w - padding * 2;
       const availH  = h - padding * 2;
-      const scale   = Math.min(availW / img.width, availH / img.height);
+      const scale   = Math.min(availW / img.width, availH / img.height, 1);
       const scaledW = img.width  * scale;
       const scaledH = img.height * scale;
       const matW    = scaledW + inset * 2;
@@ -1552,7 +1552,7 @@ async function copyToClipboard() {
     const img    = await loadImageElement(screenshotDataUrl);
     const availW = width  - padding * 2;
     const availH = height - padding * 2;
-    const scale  = Math.min(availW / img.width, availH / img.height);
+    const scale  = Math.min(availW / img.width, availH / img.height, 1);
 
     const scaledW = img.width  * scale;
     const scaledH = img.height * scale;
