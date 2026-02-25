@@ -1384,24 +1384,31 @@ async function exportVideo() {
   setRecordingState(0);
 
   try {
-    const stageEl = els.stage;
     const captureCanvas = document.createElement('canvas');
 
-    // Use the stage's displayed size; fall back to screenshot natural size + padding
-    let capW = stageEl.offsetWidth;
-    let capH = stageEl.offsetHeight;
-    if (capW <= 0 || capH <= 0) {
-      const natW = els.screenshotImg.naturalWidth  || 800;
-      const natH = els.screenshotImg.naturalHeight || 600;
-      const pad  = state.padding;
+    // Always export at full output resolution (natural screenshot size + padding)
+    // Never use the screen-displayed stage size (which is zoomed/scaled down)
+    const natW = els.screenshotImg.naturalWidth  || 800;
+    const natH = els.screenshotImg.naturalHeight || 600;
+    const pad  = state.padding;
+    const ratio = RATIOS.find(r => r.id === state.ratio);
+    let capW, capH;
+    if (state.ratio === 'auto' || !ratio || (!ratio.w && !ratio.h)) {
       capW = natW + pad * 2;
       capH = natH + pad * 2;
-      // Scale down to reasonable video dimensions
-      const maxDim = 1280;
-      const s = Math.min(maxDim / capW, maxDim / capH, 1);
-      capW = Math.round(capW * s);
-      capH = Math.round(capH * s);
+    } else if (state.ratio === 'custom') {
+      capW = state.customWidth;
+      capH = state.customHeight;
+    } else {
+      capW = ratio.w;
+      capH = ratio.h;
     }
+    // Cap at 1920 to avoid huge files
+    const maxDim = 1920;
+    const s = Math.min(maxDim / capW, maxDim / capH, 1);
+    capW = Math.round(capW * s);
+    capH = Math.round(capH * s);
+
     captureCanvas.width  = capW;
     captureCanvas.height = capH;
     const captureCtx = captureCanvas.getContext('2d');
