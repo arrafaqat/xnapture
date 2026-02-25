@@ -1386,37 +1386,8 @@ async function exportVideo() {
   try {
     const captureCanvas = document.createElement('canvas');
 
-    // Compute export canvas size matching the visual preview proportions
-    const natW = els.screenshotImg.naturalWidth  || 800;
-    const natH = els.screenshotImg.naturalHeight || 600;
-    const ratio = RATIOS.find(r => r.id === state.ratio);
-
-    // padding in the preview is relative to the stage display size.
-    // To preserve the same visual proportion at export resolution, we scale
-    // padding by the ratio of (export canvas size / preview stage size).
-    const previewStageW = els.stage.offsetWidth  || 800;
-    const previewStageH = els.stage.offsetHeight || 600;
-    const padRatioW = state.padding / previewStageW;
-    const padRatioH = state.padding / previewStageH;
-
-    let capW, capH;
-    if (state.ratio === 'auto' || !ratio || (!ratio.w && !ratio.h)) {
-      // Base canvas on natural size; add proportional padding
-      const basePad = Math.round(Math.min(padRatioW * natW, padRatioH * natH));
-      capW = natW + basePad * 2;
-      capH = natH + basePad * 2;
-    } else if (state.ratio === 'custom') {
-      capW = state.customWidth;
-      capH = state.customHeight;
-    } else {
-      capW = ratio.w;
-      capH = ratio.h;
-    }
-    // Cap at 1920 to avoid huge files
-    const maxDim = 1920;
-    const s = Math.min(maxDim / capW, maxDim / capH, 1);
-    capW = Math.round(capW * s);
-    capH = Math.round(capH * s);
+    // Use identical dimensions as PNG export for consistency
+    const { width: capW, height: capH } = getExportDimensions();
 
     captureCanvas.width  = capW;
     captureCanvas.height = capH;
@@ -1445,13 +1416,8 @@ async function exportVideo() {
     };
 
     const img = await loadImageElement(screenshotDataUrl);
-    const { inset, borderRadius, shadow } = state;
+    const { padding, inset, borderRadius, shadow } = state;
     const matColor = state.insetColor || '#ffffff';
-    // Scale padding proportionally from preview stage size to export canvas size
-    const exportScaleW = capW / (els.stage.offsetWidth  || capW);
-    const exportScaleH = capH / (els.stage.offsetHeight || capH);
-    const exportScale  = Math.min(exportScaleW, exportScaleH);
-    const padding = Math.round(state.padding * exportScale);
 
     function drawOneFrame(frameIndex) {
       const w = captureCanvas.width;
