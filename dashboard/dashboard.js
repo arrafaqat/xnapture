@@ -104,7 +104,7 @@ const DEFAULTS = {
 
 let state = { ...DEFAULTS };
 let screenshotDataUrl = null;
-let currentZoom = 0.5;
+let currentZoom = 1;
 let currentBgTab = 'gradients';
 let currentVideoPreset = null;
 let customUploadedBgUrl = null;
@@ -876,7 +876,7 @@ function updatePreview() {
   const availH = Math.max(10, stageH - padding * 2 - inset * 2);
   const natW   = els.screenshotImg.naturalWidth  || 800;
   const natH   = els.screenshotImg.naturalHeight || 600;
-  const imgScale  = Math.min(availW / natW, availH / natH);
+  const imgScale  = Math.min(availW / natW, availH / natH, 1);
   const displayW  = Math.round(natW * imgScale);
   const displayH  = Math.round(natH * imgScale);
 
@@ -1053,8 +1053,8 @@ function applyZoom() {
 }
 
 function fitStageToCanvas() {
-  currentZoom = 0.5;
-  els.zoomSelect.value = '0.5';
+  currentZoom = 1;
+  els.zoomSelect.value = '1';
   updatePreview();
 }
 
