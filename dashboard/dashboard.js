@@ -876,7 +876,7 @@ function updatePreview() {
   const availH = Math.max(10, stageH - padding * 2 - inset * 2);
   const natW   = els.screenshotImg.naturalWidth  || 800;
   const natH   = els.screenshotImg.naturalHeight || 600;
-  const imgScale  = Math.min(availW / natW, availH / natH, 1);
+  const imgScale  = Math.min(availW / natW, availH / natH);
   const displayW  = Math.round(natW * imgScale);
   const displayH  = Math.round(natH * imgScale);
 
