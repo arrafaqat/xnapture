@@ -104,6 +104,7 @@ const DEFAULTS = {
 
 let state = { ...DEFAULTS };
 let screenshotDataUrl = null;
+let screenshotCssSize = null; // { cssWidth, cssHeight } — CSS px size for region captures
 let currentZoom = 1;
 let currentBgTab = 'gradients';
 let currentVideoPreset = null;
@@ -234,14 +235,14 @@ async function init() {
 
 async function loadScreenshot() {
   try {
-    const result = await chrome.storage.session.get('pendingScreenshot');
+    const result = await chrome.storage.session.get(['pendingScreenshot', 'pendingScreenshotMeta']);
     if (result.pendingScreenshot) {
       screenshotDataUrl = result.pendingScreenshot;
+      screenshotCssSize = result.pendingScreenshotMeta || null;
       els.screenshotImg.src = screenshotDataUrl;
       els.canvasEmpty.style.display = 'none';
       els.stageWrapper.style.display = 'flex';
-      // Clear from session to free memory
-      chrome.storage.session.remove('pendingScreenshot');
+      chrome.storage.session.remove(['pendingScreenshot', 'pendingScreenshotMeta']);
     }
   } catch (err) {
     console.error('Failed to load screenshot:', err);
@@ -874,8 +875,8 @@ function updatePreview() {
   //    Available space inside the frame (after outer padding and inset)
   const availW = Math.max(10, stageW - padding * 2 - inset * 2);
   const availH = Math.max(10, stageH - padding * 2 - inset * 2);
-  const natW   = els.screenshotImg.naturalWidth  || 800;
-  const natH   = els.screenshotImg.naturalHeight || 600;
+  const natW   = screenshotCssSize ? screenshotCssSize.cssWidth  : (els.screenshotImg.naturalWidth  || 800);
+  const natH   = screenshotCssSize ? screenshotCssSize.cssHeight : (els.screenshotImg.naturalHeight || 600);
   const imgScale  = Math.min(availW / natW, availH / natH, 1);
   const displayW  = Math.round(natW * imgScale);
   const displayH  = Math.round(natH * imgScale);
@@ -925,8 +926,8 @@ function computeStageDimensions() {
   let stageW, stageH;
 
   if (state.ratio === 'auto' || !ratio || (!ratio.w && !ratio.h)) {
-    const natW = els.screenshotImg.naturalWidth  || 800;
-    const natH = els.screenshotImg.naturalHeight || 600;
+    const natW = screenshotCssSize ? screenshotCssSize.cssWidth  : (els.screenshotImg.naturalWidth  || 800);
+    const natH = screenshotCssSize ? screenshotCssSize.cssHeight : (els.screenshotImg.naturalHeight || 600);
     const { padding } = state;
     const totalW = natW + padding * 2;
     const totalH = natH + padding * 2;
@@ -1077,11 +1078,13 @@ function getExportDimensions() {
   const ratio = RATIOS.find(r => r.id === state.ratio);
 
   if (state.ratio === 'auto' || !ratio.w) {
-    if (els.screenshotImg.naturalWidth) {
+    const natW = screenshotCssSize ? screenshotCssSize.cssWidth  : els.screenshotImg.naturalWidth;
+    const natH = screenshotCssSize ? screenshotCssSize.cssHeight : els.screenshotImg.naturalHeight;
+    if (natW) {
       const { padding } = state;
       return {
-        width: els.screenshotImg.naturalWidth + padding * 2,
-        height: els.screenshotImg.naturalHeight + padding * 2,
+        width:  natW + padding * 2,
+        height: natH + padding * 2,
       };
     }
     return { width: 1280, height: 800 };

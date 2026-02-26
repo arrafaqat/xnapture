@@ -20,7 +20,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       }
       try {
         const croppedDataUrl = await cropImage(dataUrl, msg.rect);
-        openDashboard(croppedDataUrl);
+        // Store CSS pixel dimensions so dashboard can display at correct size
+        openDashboard(croppedDataUrl, { cssWidth: msg.rect.width, cssHeight: msg.rect.height });
       } catch (err) {
         console.error('Crop error:', err);
         openDashboard(dataUrl);
@@ -85,8 +86,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 });
 
-function openDashboard(dataUrl) {
-  chrome.storage.session.set({ pendingScreenshot: dataUrl }, () => {
+function openDashboard(dataUrl, meta = null) {
+  const data = { pendingScreenshot: dataUrl };
+  if (meta) data.pendingScreenshotMeta = meta;
+  chrome.storage.session.set(data, () => {
     chrome.tabs.create({
       url: chrome.runtime.getURL('dashboard/dashboard.html')
     });
