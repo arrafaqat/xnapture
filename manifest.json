@@ -34,7 +34,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["dashboard/*", "assets/*", "assets/background-images/*", "assets/icons/*", "libs/*"],
+      "resources": ["dashboard/*", "assets/*", "assets/background-images/*", "assets/background-videos/*", "assets/icons/*", "libs/*"],
       "matches": ["<all_urls>"]
     }
   ]

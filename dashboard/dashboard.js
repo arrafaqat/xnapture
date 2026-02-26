@@ -71,12 +71,9 @@ const BG_IMAGES = [
 ];
 
 const VIDEO_PRESETS = [
-  { name: 'Particles',  emoji: '✨', gradient: 'linear-gradient(135deg, #0f0c29, #302b63)' },
-  { name: 'Bokeh',      emoji: '🌸', gradient: 'linear-gradient(135deg, #f093fb, #f5576c)' },
-  { name: 'Waves',      emoji: '🌊', gradient: 'linear-gradient(135deg, #667eea, #764ba2)' },
-  { name: 'Aurora',     emoji: '🌌', gradient: 'linear-gradient(135deg, #134e5e, #71b280)' },
-  { name: 'Fire',       emoji: '🔥', gradient: 'linear-gradient(135deg, #f12711, #f5af19)' },
-  { name: 'Clouds',     emoji: '☁️', gradient: 'linear-gradient(135deg, #a8edea, #fed6e3)' },
+  { name: 'Video 1', src: '../assets/background-videos/video1.mp4' },
+  { name: 'Video 2', src: '../assets/background-videos/video2.mp4' },
+  { name: 'Video 3', src: '../assets/background-videos/video3.mp4' },
 ];
 
 const DEFAULTS = {
@@ -379,26 +376,42 @@ function buildImageGrid() {
 function buildVideoGrid() {
   const grid = $('video-grid');
   grid.innerHTML = '';
-  VIDEO_PRESETS.forEach((v, i) => {
+  VIDEO_PRESETS.forEach((v) => {
     const thumb = document.createElement('div');
     thumb.className = 'video-thumb';
-    thumb.style.background = v.gradient;
     thumb.setAttribute('role', 'button');
     thumb.setAttribute('tabindex', '0');
     thumb.setAttribute('aria-label', `${v.name} video background`);
     thumb.title = v.name;
 
+    // Real video preview
+    const videoEl = document.createElement('video');
+    videoEl.src = v.src;
+    videoEl.muted = true;
+    videoEl.loop = true;
+    videoEl.playsInline = true;
+    videoEl.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:6px;pointer-events:none;';
+    thumb.appendChild(videoEl);
+
+    // Play icon overlay
     const indicator = document.createElement('div');
     indicator.className = 'play-indicator';
-    indicator.textContent = v.emoji;
+    indicator.textContent = '▶';
     thumb.appendChild(indicator);
+
+    if (state.bgType === 'video-preset' && state.bgValue === v.src) {
+      thumb.classList.add('selected');
+    }
+
+    thumb.addEventListener('mouseenter', () => videoEl.play());
+    thumb.addEventListener('mouseleave', () => { videoEl.pause(); videoEl.currentTime = 0; });
 
     thumb.addEventListener('click', () => {
       document.querySelectorAll('.video-thumb').forEach(t => t.classList.remove('selected'));
       thumb.classList.add('selected');
       currentVideoPreset = v;
       state.bgType = 'video-preset';
-      state.bgValue = v.gradient;
+      state.bgValue = v.src;
       setVideoExportEnabled(true);
       updatePreview();
       saveSettings();
@@ -985,10 +998,8 @@ function applyBackground(bgType, bgValue, opacity = 100) {
     stageBg.style.animation = '';           // clear any leftover video shimmer
     stageBg.style.background = `url('${customUploadedBgUrl}') center/cover no-repeat`;
   } else if (bgType === 'video-preset') {
-    // Use animated CSS gradient as video-like background
-    if (existingVideo) existingVideo.remove();
-    stageBg.style.background = bgValue;
-    addAnimatedVideoOverlay(stageBg);       // sets backgroundSize 200%x200% + animation
+    // Play the actual preset video file as background
+    applyVideoBackground(null, bgValue);
   } else if (bgType === 'video-url' && customUploadedVideoUrl) {
     applyVideoBackground(null, customUploadedVideoUrl);
   }
