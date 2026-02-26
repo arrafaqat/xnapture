@@ -104,7 +104,7 @@ const DEFAULTS = {
 
 let state = { ...DEFAULTS };
 let screenshotDataUrl = null;
-let currentZoom = 1;
+let currentZoom = 0.5;
 let currentBgTab = 'gradients';
 let currentVideoPreset = null;
 let customUploadedBgUrl = null;
@@ -930,14 +930,17 @@ function computeStageDimensions() {
     const { padding } = state;
     const totalW = natW + padding * 2;
     const totalH = natH + padding * 2;
+    // Scale down only if too big, never scale up (1:1 preview)
     const s = Math.min(canvasW / totalW, canvasH / totalH, 1) * currentZoom;
     stageW = Math.round(totalW * s);
     stageH = Math.round(totalH * s);
   } else if (state.ratio === 'custom') {
+    // Show at actual pixel size, only scale down if too big to fit
     const s = Math.min(canvasW / state.customWidth, canvasH / state.customHeight, 1) * currentZoom;
     stageW = Math.round(state.customWidth  * s);
     stageH = Math.round(state.customHeight * s);
   } else {
+    // Preset ratios: show at actual pixel size, only scale down if too big
     const s = Math.min(canvasW / ratio.w, canvasH / ratio.h, 1) * currentZoom;
     stageW = Math.round(ratio.w * s);
     stageH = Math.round(ratio.h * s);
@@ -1050,7 +1053,8 @@ function applyZoom() {
 }
 
 function fitStageToCanvas() {
-  currentZoom = 1;
+  currentZoom = 0.5;
+  els.zoomSelect.value = '0.5';
   updatePreview();
 }
 
