@@ -223,6 +223,9 @@ async function init() {
   buildVideoGrid();
   buildRatioGrid();
 
+  // Preload background images into browser cache so Images tab loads instantly
+  BG_IMAGES.filter(b => b.isFile).forEach(b => { new Image().src = b.bg; });
+
   // Attach event listeners
   attachEvents();
 
